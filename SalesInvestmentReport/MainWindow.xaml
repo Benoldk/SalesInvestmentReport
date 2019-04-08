@@ -4,9 +4,65 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SalesInvestmentReport"
+        xmlns:cmd="clr-namespace:SalesInvestmentReport.Commands"
+        xmlns:cctrl="clr-namespace:SalesInvestmentReport.Custom_Controls"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
+        Title="Sales &amp; Investments Report System" 
+        Height="768" Width="1024" 
+        WindowState="Maximized" 
+        WindowStartupLocation="CenterScreen"
+        Icon="AppIcon.ico">
+    <Window.CommandBindings>
+        <CommandBinding Command="cmd:CustomCommands.LoadReport" Executed="CommandBinding_LoadReport" />
+        <CommandBinding Command="cmd:CustomCommands.GenerateReport" Executed="CommandBinding_GenerateReport" />
+        <CommandBinding Command="cmd:CustomCommands.SaveReport" Executed="CommandBinding_SaveReport" />
+        <CommandBinding Command="cmd:CustomCommands.ExitReport" Executed="CommandBinding_ExitReport" />
+    </Window.CommandBindings>
     <Grid>
+        <StackPanel VerticalAlignment="Top">
+            <Menu x:Name="reportsMenu" Height="25" Width="auto">
+                <MenuItem x:Name="fileMenuItem" Height="24" Header="File">
+                    <MenuItem x:Name="loadReportMenuItem" Header="Load Report" Command="cmd:CustomCommands.LoadReport">
+                        <MenuItem.Icon>
+                            <Image Source="load report.ico"></Image>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem x:Name="generateReportMenuItem" Header="Generate Report" Command="cmd:CustomCommands.GenerateReport">
+                        <MenuItem.Icon>
+                            <Image Source="generate report.ico"></Image>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem x:Name="saveReportMenuItem" Header="Save Report" Command="cmd:CustomCommands.SaveReport">
+                        <MenuItem.Icon>
+                            <Image Source="save report.ico"></Image>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <Separator/>
+                    <MenuItem x:Name="exitAppMenuItem" Header="Exit" Command="cmd:CustomCommands.ExitReport">
+                        <MenuItem.Icon>
+                            <Image Source="Exit Button.ico"></Image>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                </MenuItem>
+            </Menu>
+
+            <TabControl VerticalAlignment="Top" Height="700" Width="auto">
+                <TabItem Header="Sales Summary" Height="auto">
+                    <Grid Background="#FFE5E5E5">
+                        <cctrl:SalesSummaryGraph />
+                    </Grid>
+                </TabItem>
+                <TabItem Header="Assets Under Management Summary">
+                    <Grid Background="#FFE5E5E5"/>
+                </TabItem>
+                <TabItem Header="Break Report">
+                    <Grid Background="#FFE5E5E5"/>
+                </TabItem>
+                <TabItem Header="Investor Profit">
+                    <Grid Background="#FFE5E5E5"/>
+                </TabItem>
+            </TabControl>
+        </StackPanel>
         
     </Grid>
 </Window>

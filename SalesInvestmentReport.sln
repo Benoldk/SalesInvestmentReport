@@ -5,6 +5,10 @@ VisualStudioVersion = 15.0.26730.12
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SalesInvestmentReport", "SalesInvestmentReport\SalesInvestmentReport.csproj", "{16F40612-A5FD-47A1-9D56-0E182C709279}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataModels", "DataModels\DataModels.csproj", "{BFE22EB5-14F3-45CB-808A-335744C80111}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BusinessLogic", "BusinessLogic\BusinessLogic.csproj", "{EF7C9533-B7F5-4BEA-82E6-7BF124113B1E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,14 @@ Global
 		{16F40612-A5FD-47A1-9D56-0E182C709279}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{16F40612-A5FD-47A1-9D56-0E182C709279}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{16F40612-A5FD-47A1-9D56-0E182C709279}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BFE22EB5-14F3-45CB-808A-335744C80111}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BFE22EB5-14F3-45CB-808A-335744C80111}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BFE22EB5-14F3-45CB-808A-335744C80111}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BFE22EB5-14F3-45CB-808A-335744C80111}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EF7C9533-B7F5-4BEA-82E6-7BF124113B1E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EF7C9533-B7F5-4BEA-82E6-7BF124113B1E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EF7C9533-B7F5-4BEA-82E6-7BF124113B1E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EF7C9533-B7F5-4BEA-82E6-7BF124113B1E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
