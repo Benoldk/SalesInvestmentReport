@@ -1,12 +1,20 @@
 ﻿using DataModels;
+using NotVisualBasic.FileIO;
+using Presenter.BusinessLogic;
 using System;
 using System.Collections.Generic;
-using System.IO;
 
-namespace BusinessLogic
+namespace Presenter
 {
-    public class TransactionPresenter
+    public class TransactionPresenter : ITransactionPresenter
     {
+        protected ITransactionBusinessLogic businessLogic;
+
+        public TransactionPresenter()
+        {
+            businessLogic = new TransactionBusinessLogic();
+        }
+
         public List<ITransaction> LoadTransactions(string sFilePath)
         {
             List<ITransaction> transactions = new List<ITransaction>();
@@ -14,21 +22,24 @@ namespace BusinessLogic
             {
                 if (!string.IsNullOrEmpty(sFilePath))
                 {
-                    using (StreamReader sr = new StreamReader(new FileStream(sFilePath, FileMode.Open, FileAccess.Read)))
+                    using (CsvTextFieldParser csvParser = new CsvTextFieldParser(sFilePath))
                     {
-                        while (!sr.EndOfStream)
+                        csvParser.Delimiters = new[] { "," };
+                        csvParser.ReadFields();
+                        string[] fields;
+                        while((fields = csvParser.ReadFields()) != null)
                         {
-                            string[] commaSeparatedData = sr.ReadLine().Split(',');
-                            transactions.Add(new Transaction
+                            ITransaction trx = new Transaction
                             {
-                                Date = DateTime.Parse(commaSeparatedData[0]),
-                                Type = commaSeparatedData[1],
-                                Shares = double.Parse(commaSeparatedData[2]),
-                                Price = double.Parse(commaSeparatedData[3]),
-                                Fund = commaSeparatedData[4],
-                                Investor = commaSeparatedData[5],
-                                SalesRep = commaSeparatedData[6]
-                            });
+                                Date = DateTime.Parse(fields[0].Trim()),
+                                Type = fields[1].Trim(),
+                                Shares = double.Parse(fields[2].Trim()),
+                                Price = double.Parse(fields[3].TrimStart('$').Trim()),
+                                Fund = fields[4].Trim(),
+                                Investor = fields[5].Trim(),
+                                SalesRep = fields[6]
+                            };
+                            transactions.Add(trx);
                         }
                     }
                 }
@@ -39,6 +50,26 @@ namespace BusinessLogic
             }
 
             return transactions;
+        }
+
+        public List<KeyValuePair<string, double>> GenerateSalesInceptionToDateSummaryByType(IEnumerable<ITransaction> transactions, string type)
+        {
+            return businessLogic.GenerateSalesInceptionToDateSummaryByType(transactions, type);
+        }
+
+        public Dictionary<string, List<KeyValuePair<DateTime, double>>> GenerateSalesMonthToDateSummaryByType(IEnumerable<ITransaction> transactions, string type)
+        {
+            return businessLogic.GenerateSalesMonthToDateSummaryByType(transactions, type);
+        }
+
+        public Dictionary<string, List<KeyValuePair<string, double>>> GenerateSalesQuarterToDateSummaryByType(IEnumerable<ITransaction> transactions, string type)
+        {
+            return businessLogic.GenerateSalesQuarterToDateSummaryByType(transactions, type);
+        }
+
+        public List<KeyValuePair<string, double>> GenerateSalesYearToDateSummaryByType(IEnumerable<ITransaction> transactions, string type)
+        {
+            return businessLogic.GenerateSalesYearToDateSummaryByType(transactions, type);
         }
     }
 }

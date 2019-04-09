@@ -6,12 +6,17 @@
         xmlns:local="clr-namespace:SalesInvestmentReport"
         xmlns:cmd="clr-namespace:SalesInvestmentReport.Commands"
         xmlns:cctrl="clr-namespace:SalesInvestmentReport.Custom_Controls"
+        xmlns:charting="clr-namespace:System.Windows.Controls.DataVisualization.Charting;assembly=System.Windows.Controls.DataVisualization.Toolkit"
         mc:Ignorable="d"
         Title="Sales &amp; Investments Report System" 
         Height="768" Width="1024" 
         WindowState="Maximized" 
         WindowStartupLocation="CenterScreen"
-        Icon="AppIcon.ico">
+        Icon="AppIcon.ico"
+        VerticalAlignment="Stretch"
+        HorizontalAlignment="Stretch"
+        VerticalContentAlignment="Stretch" 
+        HorizontalContentAlignment="Stretch">
     <Window.CommandBindings>
         <CommandBinding Command="cmd:CustomCommands.LoadReport" Executed="CommandBinding_LoadReport" />
         <CommandBinding Command="cmd:CustomCommands.GenerateReport" Executed="CommandBinding_GenerateReport" />
@@ -19,7 +24,7 @@
         <CommandBinding Command="cmd:CustomCommands.ExitReport" Executed="CommandBinding_ExitReport" />
     </Window.CommandBindings>
     <Grid>
-        <StackPanel VerticalAlignment="Top">
+        <StackPanel VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Height="auto" Width="auto">
             <Menu x:Name="reportsMenu" Height="25" Width="auto">
                 <MenuItem x:Name="fileMenuItem" Height="24" Header="File">
                     <MenuItem x:Name="loadReportMenuItem" Header="Load Report" Command="cmd:CustomCommands.LoadReport">
@@ -46,19 +51,38 @@
                 </MenuItem>
             </Menu>
 
-            <TabControl VerticalAlignment="Top" Height="700" Width="auto">
-                <TabItem Header="Sales Summary" Height="auto">
-                    <Grid Background="#FFE5E5E5">
-                        <cctrl:SalesSummaryGraph />
+            <TabControl HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch">
+                <TabItem Header="Sales Summary">
+                    <Grid Background="#FFE5E5E5" Height="970" VerticalAlignment="Stretch">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <charting:Chart Name="saleSummaryYTDChart" Title="Year to Date Sales per Rep" Grid.Row="0" Grid.Column="0" >
+                        </charting:Chart>
+
+                        <charting:Chart Name="saleSummaryMTDChart" Title="Month to Date Sales per Rep" Grid.Row="0" Grid.Column="1">
+                        </charting:Chart>
+
+                        <charting:Chart Name="saleSummaryQTDChart" Title="Quater to Date Sales per Rep" Grid.Row="1" Grid.Column="0">
+                        </charting:Chart>
+
+                        <charting:Chart Name="saleSummaryITDChart" Title="Inception to Date Sales per Rep" Grid.Row="1" Grid.Column="1">
+                        </charting:Chart>
                     </Grid>
                 </TabItem>
-                <TabItem Header="Assets Under Management Summary">
+                <TabItem Header="Assets Under Management Summary" VerticalAlignment="Stretch">
                     <Grid Background="#FFE5E5E5"/>
                 </TabItem>
-                <TabItem Header="Break Report">
+                <TabItem Header="Break Report" VerticalAlignment="Stretch">
                     <Grid Background="#FFE5E5E5"/>
                 </TabItem>
-                <TabItem Header="Investor Profit">
+                <TabItem Header="Investor Profit" VerticalAlignment="Stretch">
                     <Grid Background="#FFE5E5E5"/>
                 </TabItem>
             </TabControl>

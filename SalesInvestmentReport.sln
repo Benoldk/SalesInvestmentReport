@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SalesInvestmentReport", "Sa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataModels", "DataModels\DataModels.csproj", "{BFE22EB5-14F3-45CB-808A-335744C80111}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BusinessLogic", "BusinessLogic\BusinessLogic.csproj", "{EF7C9533-B7F5-4BEA-82E6-7BF124113B1E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Presenter", "BusinessLogic\Presenter.csproj", "{EF7C9533-B7F5-4BEA-82E6-7BF124113B1E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
