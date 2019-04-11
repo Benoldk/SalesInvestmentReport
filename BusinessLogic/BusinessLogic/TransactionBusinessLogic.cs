@@ -170,7 +170,7 @@ namespace Presenter.BusinessLogic
                     lstFundInceptionToDateData.Add(fundSoldInceptionToCurDate);
                     continue;
                 }
-                string investorToFund = string.Format("{0} : {1}", selectedBuyGroup.Investor, selectedBuyGroup.Fund);
+                string investorToFund = string.Format("{0} : {1}: {2}", selectedBuyGroup.Investor, selectedBuyGroup.SalesRep, selectedBuyGroup.Fund);
                 summaryData.Add(investorToFund, lstFundInceptionToDateData);
                 continue;
             }
