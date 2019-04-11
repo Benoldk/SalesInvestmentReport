@@ -2,6 +2,9 @@
 
 namespace DataModels
 {
+    /// <summary>
+    /// Transaction Interface that declares properties mirroring the data coming from the file
+    /// </summary>
     public interface ITransaction
     {
         DateTime Date { get; set; }

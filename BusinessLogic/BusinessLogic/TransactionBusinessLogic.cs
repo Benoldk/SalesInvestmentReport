@@ -5,8 +5,18 @@ using System.Linq;
 
 namespace Presenter.BusinessLogic
 {
+    /// <summary>
+    /// Transaction Business Logic concrete class that defines function from
+    /// interface to operate on data as needed presenting to the view.
+    /// </summary>
     public class TransactionBusinessLogic : ITransactionBusinessLogic
     {
+        /// <summary>
+        /// Generates data for year to date sales for each fund sold by the sales reps
+        /// </summary>
+        /// <param name="transactions"></param>
+        /// <param name="type"></param>
+        /// <returns></returns>
         public List<KeyValuePair<string, double>> GenerateYearToDateSummaryByType(IEnumerable<ITransaction> transactions, string type)
         {
             List<KeyValuePair<string, double>> results = new List<KeyValuePair<string, double>>();
@@ -30,6 +40,12 @@ namespace Presenter.BusinessLogic
             return results;
         }
 
+        /// <summary>
+        /// Generates data for Month to date shares sold for each fund by the sales reps
+        /// </summary>
+        /// <param name="transactions"></param>
+        /// <param name="type"></param>
+        /// <returns></returns>
         public Dictionary<string, List<KeyValuePair<DateTime, double>>> GenerateMonthToDateSummaryByType(IEnumerable<ITransaction> transactions, string type)
         {
             var results = new Dictionary<string, List<KeyValuePair<DateTime, double>>>();
@@ -59,6 +75,12 @@ namespace Presenter.BusinessLogic
             return results;
         }
 
+        /// <summary>
+        /// Generates data for Quarter to date shares sold for each fund by the sales reps
+        /// </summary>
+        /// <param name="transactions"></param>
+        /// <param name="type"></param>
+        /// <returns></returns>
         public Dictionary<string, List<KeyValuePair<string, double>>> GenerateQuarterToDateSummaryByType(IEnumerable<ITransaction> transactions, string type)
         {
             // result to return
@@ -104,6 +126,11 @@ namespace Presenter.BusinessLogic
             return quarterToDateResults;
         }
 
+        /// <summary>
+        /// Generates data for shares sold by the sales reps based in relation to the date the shares were first bought (inception date)
+        /// </summary>
+        /// <param name="transactions"></param>
+        /// <returns></returns>
         public Dictionary<string, List<KeyValuePair<string, double>>> GenerateInceptionToDateSummary(IEnumerable<ITransaction> transactions)
         {
             var summaryData = new Dictionary<string, List<KeyValuePair<string, double>>>();
@@ -151,6 +178,11 @@ namespace Presenter.BusinessLogic
             return summaryData;
         }
 
+        /// <summary>
+        /// Generates data for the net amount held by investors across all funds whether positive or negative
+        /// </summary>
+        /// <param name="transactions"></param>
+        /// <returns></returns>
         public Dictionary<string, List<KeyValuePair<string, double>>> GenerateAssetsUnderManagementSummary(IEnumerable<ITransaction> transactions)
         {
             var results = new Dictionary<string, List<KeyValuePair<string, double>>>();
@@ -185,6 +217,11 @@ namespace Presenter.BusinessLogic
             return results;
         }
 
+        /// <summary>
+        /// Generates data for the view to display to negative cash and share balances for each investor and fund
+        /// </summary>
+        /// <param name="transactions"></param>
+        /// <returns></returns>
         public Dictionary<string, List<KeyValuePair<string, double>>> GenerateBreakReport(IEnumerable<ITransaction> transactions)
         {
             var results = new Dictionary<string, List<KeyValuePair<string, double>>>();
@@ -229,6 +266,11 @@ namespace Presenter.BusinessLogic
             return results;
         }
 
+        /// <summary>
+        /// Generates data for for the view to display the net profit or loss on all investments
+        /// </summary>
+        /// <param name="transactions"></param>
+        /// <returns></returns>
         public Dictionary<string, List<KeyValuePair<string, double>>> GenerateInvestorProfitReport(IEnumerable<ITransaction> transactions)
         {
             var results = new Dictionary<string, List<KeyValuePair<string, double>>>();

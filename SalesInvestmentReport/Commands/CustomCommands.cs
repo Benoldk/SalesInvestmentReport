@@ -3,7 +3,7 @@
 namespace SalesInvestmentReport.Commands
 {
     /// <summary>
-    /// Contains custom command for WPF view to use
+    /// Contains custom command for Main Window view to use
     /// </summary>
     public static class CustomCommands
     {

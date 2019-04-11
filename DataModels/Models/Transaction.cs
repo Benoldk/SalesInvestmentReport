@@ -2,6 +2,9 @@
 
 namespace DataModels
 {
+    /// <summary>
+    /// Concrete Transaction class that extends interface's properties that mirror the data coming from the file.
+    /// </summary>
     public class Transaction : ITransaction
     {
         public DateTime Date { get; set; }
