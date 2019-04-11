@@ -3,9 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:SalesInvestmentReport"
         xmlns:cmd="clr-namespace:SalesInvestmentReport.Commands"
-        xmlns:cctrl="clr-namespace:SalesInvestmentReport.Custom_Controls"
         xmlns:charting="clr-namespace:System.Windows.Controls.DataVisualization.Charting;assembly=System.Windows.Controls.DataVisualization.Toolkit"
         mc:Ignorable="d"
         Title="Sales &amp; Investments Report System" 
@@ -20,7 +18,6 @@
     <Window.CommandBindings>
         <CommandBinding Command="cmd:CustomCommands.LoadReport" Executed="CommandBinding_LoadReport" />
         <CommandBinding Command="cmd:CustomCommands.GenerateReport" Executed="CommandBinding_GenerateReport" />
-        <CommandBinding Command="cmd:CustomCommands.SaveReport" Executed="CommandBinding_SaveReport" />
         <CommandBinding Command="cmd:CustomCommands.ExitReport" Executed="CommandBinding_ExitReport" />
     </Window.CommandBindings>
     <Grid>
@@ -37,11 +34,6 @@
                             <Image Source="generate report.ico"></Image>
                         </MenuItem.Icon>
                     </MenuItem>
-                    <MenuItem x:Name="saveReportMenuItem" Header="Save Report" Command="cmd:CustomCommands.SaveReport">
-                        <MenuItem.Icon>
-                            <Image Source="save report.ico"></Image>
-                        </MenuItem.Icon>
-                    </MenuItem>
                     <Separator/>
                     <MenuItem x:Name="exitAppMenuItem" Header="Exit" Command="cmd:CustomCommands.ExitReport">
                         <MenuItem.Icon>
@@ -51,8 +43,14 @@
                 </MenuItem>
             </Menu>
 
-            <TabControl HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch">
-                <TabItem Header="Sales Summary">
+            <TabControl x:Name="tcInvestorReport" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch">
+                <TabItem Header="Sales Report Data" Name="tabSalesReportData">
+                    <StackPanel>
+                        <Button x:Name="btnGenereReport" Width="150" HorizontalAlignment="Left" Margin="0 0 0 10" Content="Generate Report" Command="cmd:CustomCommands.GenerateReport" IsEnabled="False" />
+                        <DataGrid x:Name="dgReportData" Height="auto" MinHeight="496" />
+                    </StackPanel>
+                </TabItem>
+                <TabItem Header="Sales Summary" Name="tabSalesSummary">
                     <Grid Background="#FFE5E5E5" Height="970" VerticalAlignment="Stretch">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="*"/>
@@ -76,17 +74,22 @@
                         </charting:Chart>
                     </Grid>
                 </TabItem>
-                <TabItem Header="Assets Under Management Summary" VerticalAlignment="Stretch">
-                    <Grid Background="#FFE5E5E5"/>
+                <TabItem Name="tabAssetsUnderManagementSummary" Header="Assets Under Management Summary" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                    <DockPanel Background="#FFE5E5E5" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                        <charting:Chart Name="assetsUndertManagementSummaryChart" Title="Assets Under Management Summary" Height="auto" MinHeight="688" />
+                    </DockPanel>
                 </TabItem>
-                <TabItem Header="Break Report" VerticalAlignment="Stretch">
-                    <Grid Background="#FFE5E5E5"/>
+                <TabItem Name="tabBreakReport" Header="Break Report" VerticalAlignment="Stretch">
+                    <DockPanel Background="#FFE5E5E5" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                        <charting:Chart Name="breakReportChart" Title="Break Report" Height="auto" MinHeight="688" />
+                    </DockPanel>
                 </TabItem>
-                <TabItem Header="Investor Profit" VerticalAlignment="Stretch">
-                    <Grid Background="#FFE5E5E5"/>
+                <TabItem Name="tabInvestorProfit" Header="Investor Profit" VerticalAlignment="Stretch">
+                    <DockPanel Background="#FFE5E5E5" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                        <charting:Chart Name="investorProfitChart" Title="Break Report" Height="auto" MinHeight="688" />
+                    </DockPanel>
                 </TabItem>
             </TabControl>
         </StackPanel>
-        
     </Grid>
 </Window>

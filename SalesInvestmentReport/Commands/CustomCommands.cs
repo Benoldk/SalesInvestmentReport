@@ -34,20 +34,6 @@ namespace SalesInvestmentReport.Commands
                 new KeyGesture(Key.G, ModifierKeys.Control)
             }
         );
-        
-        /// <summary>
-        /// Custom command to bind to CTRL + S keys and save the report
-        /// </summary>
-        public static readonly RoutedUICommand SaveReport = new RoutedUICommand
-        (
-            "Save Report",
-            "saveReportMenuItem",
-            typeof(CustomCommands),
-            new InputGestureCollection()
-            {
-                new KeyGesture(Key.S, ModifierKeys.Control)
-            }
-        );
 
         /// <summary>
         /// Custom command to bind to ALT + F4 keys and exit out of the application

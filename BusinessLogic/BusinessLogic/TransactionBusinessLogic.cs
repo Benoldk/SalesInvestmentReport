@@ -7,7 +7,7 @@ namespace Presenter.BusinessLogic
 {
     public class TransactionBusinessLogic : ITransactionBusinessLogic
     {
-        public List<KeyValuePair<string, double>> GenerateSalesYearToDateSummaryByType(IEnumerable<ITransaction> transactions, string type)
+        public List<KeyValuePair<string, double>> GenerateYearToDateSummaryByType(IEnumerable<ITransaction> transactions, string type)
         {
             List<KeyValuePair<string, double>> results = new List<KeyValuePair<string, double>>();
 
@@ -30,7 +30,7 @@ namespace Presenter.BusinessLogic
             return results;
         }
 
-        public Dictionary<string, List<KeyValuePair<DateTime, double>>> GenerateSalesMonthToDateSummaryByType(IEnumerable<ITransaction> transactions, string type)
+        public Dictionary<string, List<KeyValuePair<DateTime, double>>> GenerateMonthToDateSummaryByType(IEnumerable<ITransaction> transactions, string type)
         {
             var results = new Dictionary<string, List<KeyValuePair<DateTime, double>>>();
 
@@ -59,10 +59,12 @@ namespace Presenter.BusinessLogic
             return results;
         }
 
-        public Dictionary<string, List<KeyValuePair<string, double>>> GenerateSalesQuarterToDateSummaryByType(IEnumerable<ITransaction> transactions, string type)
+        public Dictionary<string, List<KeyValuePair<string, double>>> GenerateQuarterToDateSummaryByType(IEnumerable<ITransaction> transactions, string type)
         {
+            // result to return
             var quarterToDateResults = new Dictionary<string, List<KeyValuePair<string, double>>>();
 
+            // month by the quarters they fall into
             var monthToQuarters = new Dictionary<int, string>
             {
                 { 1, "Q1" },
@@ -102,18 +104,165 @@ namespace Presenter.BusinessLogic
             return quarterToDateResults;
         }
 
-        public List<KeyValuePair<string, double>> GenerateSalesInceptionToDateSummaryByType(IEnumerable<ITransaction> transactions, string type)
+        public Dictionary<string, List<KeyValuePair<string, double>>> GenerateInceptionToDateSummary(IEnumerable<ITransaction> transactions)
         {
-            var summaryData = new List<KeyValuePair<string, double>>();
+            var summaryData = new Dictionary<string, List<KeyValuePair<string, double>>>();
 
+            // funds bought grouped by investor, fund name, sales rep
+            var boughtInvestorFundGroup = transactions.Where(w => w.Type == "BUY").GroupBy(g => new { g.Investor, g.Fund, g.SalesRep  });
+
+            // funds sold grouped by investor, fund name, sales rep
+            var soldInvestorFundGroup = transactions.Where(w => w.Type == "SELL").GroupBy(g => new { g.Investor, g.Fund, g.SalesRep  });
+
+            DateTime maxSellDate = transactions.Where(w => w.Type == "SELL").OrderByDescending(o => o.Date).Select(s => s.Date).First();
             
-
-            foreach (var trx in transactions.GroupBy(t => new { t.SalesRep }))
+            foreach (var fundsBoughtGrp in boughtInvestorFundGroup)
             {
+                List<KeyValuePair<string, double>> lstFundInceptionToDateData = new List<KeyValuePair<string, double>>();
+                var selectedBuyGroup = fundsBoughtGrp.OrderBy(o => o.Date).Select(s => new { s.Investor, s.Fund, s.SalesRep, s.Date  }).First();
+                string inceptionDate = selectedBuyGroup.Date.ToShortDateString();
+                string sellDate = maxSellDate.ToShortDateString();
+                foreach(var sellGrp in soldInvestorFundGroup)
+                {
+                    var soldFunds = sellGrp.Where(w => w.Investor == selectedBuyGroup.Investor
+                                                        && w.Fund == selectedBuyGroup.Fund
+                                                        && w.SalesRep == selectedBuyGroup.SalesRep);
 
+                    double totalSold = 0;
+                    if (soldFunds != null)
+                    {
+                        foreach(var fund in soldFunds.OrderByDescending(o => o.Date))
+                        {
+                            totalSold += fund.Shares * fund.Price;
+                            sellDate = fund.Date.ToShortDateString();
+                        }
+                    }
+
+                    string inceptionDateToSoldDate = string.Format("{0} - {1}", inceptionDate, sellDate);
+                    KeyValuePair<string, double> fundSoldInceptionToCurDate = new KeyValuePair<string, double>(inceptionDateToSoldDate, totalSold);
+                    lstFundInceptionToDateData.Add(fundSoldInceptionToCurDate);
+                    continue;
+                }
+                string investorToFund = string.Format("{0} : {1}", selectedBuyGroup.Investor, selectedBuyGroup.Fund);
+                summaryData.Add(investorToFund, lstFundInceptionToDateData);
+                continue;
             }
 
             return summaryData;
+        }
+
+        public Dictionary<string, List<KeyValuePair<string, double>>> GenerateAssetsUnderManagementSummary(IEnumerable<ITransaction> transactions)
+        {
+            var results = new Dictionary<string, List<KeyValuePair<string, double>>>();
+
+            // funds bought grouped by investor, fund name, sales rep
+            var boughtInvestorFundGroups = transactions.Where(w => w.Type == "BUY").GroupBy(g => new { g.Investor, g.Fund, g.SalesRep });
+
+            // funds sold grouped by investor, fund name, sales rep
+            var soldInvestorFundGroups = transactions.Where(w => w.Type == "SELL").GroupBy(g => new { g.Investor, g.Fund, g.SalesRep });
+
+            foreach (var fundsBoughtGrp in boughtInvestorFundGroups)
+            {
+                List<KeyValuePair<string, double>> lstInvestorNetSharesHeld = new List<KeyValuePair<string, double>>();
+                double sharesBoughtSum = fundsBoughtGrp.Sum(s => s.Shares);
+
+                var fundsBought = fundsBoughtGrp.First();
+                double sharesSoldSum = 0;
+                foreach (var fundsSoldGrp in soldInvestorFundGroups)
+                {
+                    var soldFunds = fundsSoldGrp.Where(w => w.Investor == fundsBought.Investor
+                                                        && w.Fund == fundsBought.Fund
+                                                        && w.SalesRep == fundsBought.SalesRep);
+
+                    sharesSoldSum += soldFunds.Sum(s => s.Shares);
+                }
+
+                double netShares = sharesSoldSum - sharesBoughtSum;
+                lstInvestorNetSharesHeld.Add(new KeyValuePair<string, double>(fundsBought.Fund, netShares));
+                results.Add(string.Format("{0}: {1}", fundsBought.Investor, fundsBought.Fund), lstInvestorNetSharesHeld);
+            }
+
+            return results;
+        }
+
+        public Dictionary<string, List<KeyValuePair<string, double>>> GenerateBreakReport(IEnumerable<ITransaction> transactions)
+        {
+            var results = new Dictionary<string, List<KeyValuePair<string, double>>>();
+
+            // funds bought grouped by investor, fund name
+            var boughtInvestorFundGroups = transactions.Where(w => w.Type == "BUY").GroupBy(g => new { g.Investor, g.Fund });
+
+            // funds sold grouped by investor, fund name
+            var soldInvestorFundGroups = transactions.Where(w => w.Type == "SELL").GroupBy(g => new { g.Investor, g.Fund });
+
+            foreach (var fundsBoughtGrp in boughtInvestorFundGroups)
+            {
+                List<KeyValuePair<string, double>> lstInvestorTradesBreak = new List<KeyValuePair<string, double>>();
+                double sharesBoughtSum = fundsBoughtGrp.Sum(s => s.Shares);
+                double cashSpent = fundsBoughtGrp.Sum(s => s.Price * s.Shares);
+
+                var fundsBought = fundsBoughtGrp.First();
+                double sharesSoldSum = 0;
+                double cashMadeSum = 0;
+                foreach (var fundsSoldGrp in soldInvestorFundGroups)
+                {
+                    var soldFunds = fundsSoldGrp.Where(w => w.Investor == fundsBought.Investor
+                                                        && w.Fund == fundsBought.Fund
+                                                        && w.SalesRep == fundsBought.SalesRep);
+
+                    sharesSoldSum += soldFunds.Sum(s => s.Shares);
+                    cashMadeSum += soldFunds.Sum(s => s.Price * s.Shares);
+                }
+
+                double shareDiff = sharesSoldSum - sharesBoughtSum;
+                double cashDiff = cashMadeSum - cashSpent;
+
+                if (shareDiff < 0)
+                    lstInvestorTradesBreak.Add(new KeyValuePair<string, double>("Shares", shareDiff));
+
+                if(cashDiff < 0)
+                    lstInvestorTradesBreak.Add(new KeyValuePair<string, double>("Cash", cashDiff));
+
+                results.Add(string.Format("{0}: {1}", fundsBought.Investor, fundsBought.Fund), lstInvestorTradesBreak);
+            }
+
+            return results;
+        }
+
+        public Dictionary<string, List<KeyValuePair<string, double>>> GenerateInvestorProfitReport(IEnumerable<ITransaction> transactions)
+        {
+            var results = new Dictionary<string, List<KeyValuePair<string, double>>>();
+
+            // funds bought grouped by investor, fund name
+            var boughtInvestorFundGroups = transactions.Where(w => w.Type == "BUY").GroupBy(g => new { g.Investor, g.Fund });
+
+            // funds sold grouped by investor, fund name
+            var soldInvestorFundGroups = transactions.Where(w => w.Type == "SELL").GroupBy(g => new { g.Investor, g.Fund });
+
+            foreach (var fundsBoughtGrp in boughtInvestorFundGroups)
+            {
+                List<KeyValuePair<string, double>> lstInvestorProfitsLosses = new List<KeyValuePair<string, double>>();
+                double cashSpent = fundsBoughtGrp.Sum(s => s.Price * s.Shares);
+
+                var fundsBought = fundsBoughtGrp.First();
+                double cashMadeSum = 0;
+                foreach (var fundsSoldGrp in soldInvestorFundGroups)
+                {
+                    var soldFunds = fundsSoldGrp.Where(w => w.Investor == fundsBought.Investor
+                                                        && w.Fund == fundsBought.Fund
+                                                        && w.SalesRep == fundsBought.SalesRep);
+                    
+                    cashMadeSum += soldFunds.Sum(s => s.Price * s.Shares);
+                }
+
+                double profitLoss = cashMadeSum - cashSpent;
+                
+                lstInvestorProfitsLosses.Add(new KeyValuePair<string, double>(fundsBought.Fund, profitLoss));
+
+                results.Add(string.Format("{0}: {1}", fundsBought.Investor, fundsBought.Fund), lstInvestorProfitsLosses);
+            }
+
+            return results;
         }
     }
 }

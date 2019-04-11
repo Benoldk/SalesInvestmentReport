@@ -3,6 +3,7 @@ using NotVisualBasic.FileIO;
 using Presenter.BusinessLogic;
 using System;
 using System.Collections.Generic;
+using System.Data;
 
 namespace Presenter
 {
@@ -15,9 +16,11 @@ namespace Presenter
             businessLogic = new TransactionBusinessLogic();
         }
 
-        public List<ITransaction> LoadTransactions(string sFilePath)
+        public KeyValuePair<DataTable, List<ITransaction>> LoadTransactions(string sFilePath)
         {
-            List<ITransaction> transactions = new List<ITransaction>();
+            KeyValuePair<DataTable, List<ITransaction>> viewDataAndTransactions = 
+                new KeyValuePair<DataTable, List<ITransaction>>(new DataTable(), new List<ITransaction>());
+
             try
             {
                 if (!string.IsNullOrEmpty(sFilePath))
@@ -25,10 +28,20 @@ namespace Presenter
                     using (CsvTextFieldParser csvParser = new CsvTextFieldParser(sFilePath))
                     {
                         csvParser.Delimiters = new[] { "," };
-                        csvParser.ReadFields();
+                        string[] headers = csvParser.ReadFields();
+
+                        foreach(var header in headers)
+                        {
+                            viewDataAndTransactions.Key.Columns.Add(header.Trim());
+                        }
+
                         string[] fields;
                         while((fields = csvParser.ReadFields()) != null)
                         {
+                            // add data to view data
+                            viewDataAndTransactions.Key.Rows.Add(fields);
+
+                            // create transaction data object
                             ITransaction trx = new Transaction
                             {
                                 Date = DateTime.Parse(fields[0].Trim()),
@@ -39,7 +52,7 @@ namespace Presenter
                                 Investor = fields[5].Trim(),
                                 SalesRep = fields[6]
                             };
-                            transactions.Add(trx);
+                            viewDataAndTransactions.Value.Add(trx);
                         }
                     }
                 }
@@ -49,27 +62,42 @@ namespace Presenter
                 throw ex;
             }
 
-            return transactions;
+            return viewDataAndTransactions;
         }
 
-        public List<KeyValuePair<string, double>> GenerateSalesInceptionToDateSummaryByType(IEnumerable<ITransaction> transactions, string type)
+        public List<KeyValuePair<string, double>> GenerateYearToDateSummaryByType(IEnumerable<ITransaction> transactions, string type)
         {
-            return businessLogic.GenerateSalesInceptionToDateSummaryByType(transactions, type);
+            return businessLogic.GenerateYearToDateSummaryByType(transactions, type);
         }
 
-        public Dictionary<string, List<KeyValuePair<DateTime, double>>> GenerateSalesMonthToDateSummaryByType(IEnumerable<ITransaction> transactions, string type)
+        public Dictionary<string, List<KeyValuePair<DateTime, double>>> GenerateMonthToDateSummaryByType(IEnumerable<ITransaction> transactions, string type)
         {
-            return businessLogic.GenerateSalesMonthToDateSummaryByType(transactions, type);
+            return businessLogic.GenerateMonthToDateSummaryByType(transactions, type);
         }
 
-        public Dictionary<string, List<KeyValuePair<string, double>>> GenerateSalesQuarterToDateSummaryByType(IEnumerable<ITransaction> transactions, string type)
+        public Dictionary<string, List<KeyValuePair<string, double>>> GenerateQuarterToDateSummaryByType(IEnumerable<ITransaction> transactions, string type)
         {
-            return businessLogic.GenerateSalesQuarterToDateSummaryByType(transactions, type);
+            return businessLogic.GenerateQuarterToDateSummaryByType(transactions, type);
         }
 
-        public List<KeyValuePair<string, double>> GenerateSalesYearToDateSummaryByType(IEnumerable<ITransaction> transactions, string type)
+        public Dictionary<string, List<KeyValuePair<string, double>>> GenerateInceptionToDateSummary(IEnumerable<ITransaction> transactions)
         {
-            return businessLogic.GenerateSalesYearToDateSummaryByType(transactions, type);
+            return businessLogic.GenerateInceptionToDateSummary(transactions);
+        }
+
+        public Dictionary<string, List<KeyValuePair<string, double>>> GenerateAssetsUnderManagementSummary(IEnumerable<ITransaction> transactions)
+        {
+            return businessLogic.GenerateAssetsUnderManagementSummary(transactions);
+        }
+
+        public Dictionary<string, List<KeyValuePair<string, double>>> GenerateBreakReport(IEnumerable<ITransaction> transactions)
+        {
+            return businessLogic.GenerateBreakReport(transactions);
+        }
+
+        public Dictionary<string, List<KeyValuePair<string, double>>> GenerateInvestorProfitReport(IEnumerable<ITransaction> transactions)
+        {
+            return businessLogic.GenerateInvestorProfitReport(transactions);
         }
     }
 }
